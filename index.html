@@ -1,108 +1,366 @@
 <!doctype html>
 <html lang="hr">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#111827"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <title>Mazak Ladder Assistant</title>
 <style>
 :root{color-scheme:dark;--bg:#0b1220;--panel:#151f30;--line:#2b3a50;--muted:#9aabc1;--txt:#edf4ff;--accent:#60a5fa;--green:#34d399}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font:15px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:env(safe-area-inset-top) 14px env(safe-area-inset-bottom)}
-header{padding:18px 2px 12px}h1{font-size:23px;margin:0 0 5px} .sub{color:var(--muted);font-size:13px}
-main{max-width:900px;margin:auto}.panel{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:14px;margin:12px 0}
-.row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}input,select,button{font:inherit;border-radius:10px;border:1px solid var(--line);padding:12px;background:#0d1727;color:var(--txt)}input[type=search]{width:100%;font-size:18px}button{background:#1d4ed8;border:0;font-weight:650;cursor:pointer}button.secondary{background:#26364d}button:disabled{opacity:.45}
-.tabs{display:flex;gap:7px;margin:10px 0}.tabs button{flex:1}.tabs .active{background:#2563eb}
-.small{font-size:12px;color:var(--muted)}.status{color:var(--green);font-size:13px;margin-top:8px}
-.result{border-top:1px solid var(--line);padding:13px 0}.result:first-child{border-top:0}.result h3{margin:0 0 7px;font-size:16px}.tag{display:inline-block;background:#243b58;color:#bfdbfe;padding:4px 8px;border-radius:20px;font-size:12px;margin:2px}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font:15px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:env(safe-area-inset-top) 14px env(safe-area-inset-bottom)}
+header{padding:18px 2px 12px}
+h1{font-size:23px;margin:0 0 5px}
+.sub{color:var(--muted);font-size:13px}
+main{max-width:900px;margin:auto}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:14px;margin:12px 0}
+.row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+input,select,button,textarea{font:inherit;border-radius:10px;border:1px solid var(--line);padding:12px;background:#0d1727;color:var(--txt)}
+input[type=search]{width:100%;font-size:18px}
+button{background:#1d4ed8;border:0;font-weight:650;cursor:pointer}
+button.secondary{background:#26364d}
+button:disabled{opacity:.45}
+.tabs{display:flex;gap:7px;margin:10px 0}
+.tabs button{flex:1;padding:10px 5px}
+.tabs .active{background:#2563eb}
+.small{font-size:12px;color:var(--muted)}
+.status{color:var(--green);font-size:13px;margin-top:8px}
+.result{border-top:1px solid var(--line);padding:13px 0}
+.result:first-child{border-top:0}
+.result h3{margin:0 0 7px;font-size:16px}
+.tag{display:inline-block;background:#243b58;color:#bfdbfe;padding:4px 8px;border-radius:20px;font-size:12px;margin:2px}
 pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#0a1422;border:1px solid var(--line);padding:10px;border-radius:9px;color:#dbeafe;font-size:12px;line-height:1.45}
-.hidden{display:none!important}input[type=file]{max-width:100%;font-size:13px;padding:9px;background:#0d1727}.foot{color:var(--muted);font-size:12px;line-height:1.5;padding:12px 3px 30px}
-@media(min-width:700px){body{padding-left:24px;padding-right:24px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}}
+.hidden{display:none!important}
+input[type=file]{max-width:100%;font-size:13px;padding:9px;background:#0d1727}
+.foot{color:var(--muted);font-size:12px;line-height:1.5;padding:12px 3px 30px}
+.chatbox{height:320px;overflow-y:auto;background:#0a1422;border:1px solid var(--line);border-radius:10px;padding:10px;margin:12px 0}
+.chatmsg{padding:10px 12px;border-radius:10px;margin:8px 0;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.5}
+.chatuser{background:#1d4ed8;margin-left:10%}
+.chatai{background:#26364d;margin-right:6%}
+#aiQuestion{width:100%;min-height:82px;resize:vertical}
+.ai-note{border-left:3px solid var(--accent);padding:8px 10px;background:#101d30;border-radius:5px;margin-top:10px}
+@media(min-width:700px){body{padding-left:24px;padding-right:24px}}
 </style>
 </head>
-<body><main>
-<header><h1>🛠 Mazak Ladder Assistant</h1><div class="sub">Pretraživanje PLC laddera · Mazatrol Fusion Nexus 640T</div></header>
+<body>
+<main>
+<header>
+<h1>🛠 Mazak Ladder Assistant</h1>
+<div class="sub">Pretraživanje PLC laddera · Mazatrol Fusion Nexus 640T</div>
+</header>
+
 <section class="panel">
- <div class="row" style="justify-content:space-between"><b>PLC dokument</b><span id="pages" class="small">PDF nije učitan</span></div>
- <div class="row" style="margin-top:10px">
-  <input id="pdfFile" type="file" accept="application/pdf,.pdf">
-  <button class="secondary" id="loadSample">Pokušaj učitati priloženi PDF</button>
- </div>
- <div id="loadStatus" class="status">Odaberi PDF za početak.</div>
- <div class="small" style="margin-top:7px">Dokument se obrađuje u pregledniku. Veliki PDF može trebati malo vremena.</div>
+<div class="row" style="justify-content:space-between">
+<b>PLC dokument</b><span id="pages" class="small">PDF nije učitan</span>
+</div>
+<div class="row" style="margin-top:10px">
+<input id="pdfFile" type="file" accept="application/pdf,.pdf">
+<button class="secondary" id="loadSample">Pokušaj učitati priloženi PDF</button>
+</div>
+<div id="loadStatus" class="status">Odaberi PDF za početak.</div>
+<div class="small" style="margin-top:7px">Dokument se obrađuje u pregledniku.</div>
 </section>
+
 <section class="panel">
- <div class="tabs"><button class="active" data-mode="all">Sve</button><button class="secondary" data-mode="alarm">Alarm</button><button class="secondary" data-mode="address">Adresa</button><button class="secondary" data-mode="text">Tekst</button></div>
- <input id="query" type="search" placeholder="Upiši npr. 297, F97, Chuck pressure..." autocomplete="off">
- <div class="row" style="margin-top:10px"><label class="small">Pravilo alarma: AL = F (alarm − <input id="offset" type="number" value="200" style="width:76px;padding:6px">)</label><button id="searchBtn">Pretraži cijeli ladder</button></div>
- <div id="mapInfo" class="small" style="margin-top:9px">Primjer: AL297 → F97</div>
+<div class="tabs">
+<button class="active" data-mode="all">Sve</button>
+<button class="secondary" data-mode="alarm">Alarm</button>
+<button class="secondary" data-mode="address">Adresa</button>
+<button class="secondary" data-mode="text">Tekst</button>
+</div>
+<input id="query" type="search" placeholder="Upiši npr. 297, F97, Chuck pressure..." autocomplete="off">
+<div class="row" style="margin-top:10px">
+<label class="small">Pravilo alarma: AL = F (alarm −
+<input id="offset" type="number" value="200" style="width:76px;padding:6px">)</label>
+<button id="searchBtn">Pretraži cijeli ladder</button>
+</div>
+<div id="mapInfo" class="small" style="margin-top:9px">Primjer: AL297 → F97</div>
 </section>
+
 <section class="panel">
- <div class="row" style="justify-content:space-between"><b>Rezultati pretrage</b><span id="count" class="small">0 rezultata</span></div>
- <div id="results" class="small" style="padding-top:12px">Učitaj PDF i upiši pojam za pretraživanje.</div>
+<div class="row" style="justify-content:space-between">
+<b>Rezultati pretrage</b><span id="count" class="small">0 rezultata</span>
+</div>
+<div id="results" class="small" style="padding-top:12px">Učitaj PDF i upiši pojam za pretraživanje.</div>
 </section>
+
 <section class="panel">
- <b>📷 Kamera / fotografija zaslona stroja</b>
- <p class="small">Fotografiraj alarm ili PLC prikaz. OCR prepoznaje tekst i prebacuje ga u tražilicu. Potrebna je internetska veza za učitavanje OCR biblioteke.</p>
- <div class="row"><input id="camera" type="file" accept="image/*" capture="environment" style="max-width:100%"><button id="ocrBtn" class="secondary" disabled>Prepoznaj tekst</button></div>
- <pre id="ocrText" class="hidden"></pre>
+<b>📷 Kamera / fotografija zaslona stroja</b>
+<p class="small">Fotografiraj alarm ili PLC prikaz. OCR prepoznaje tekst i prebacuje ga u tražilicu.</p>
+<div class="row">
+<input id="camera" type="file" accept="image/*" capture="environment">
+<button id="ocrBtn" class="secondary" disabled>Prepoznaj tekst</button>
+</div>
+<pre id="ocrText" class="hidden"></pre>
 </section>
-<div class="foot">Napomena: ovo je prva radna web-verzija. Rezultati su tekstualni izvodi iz PDF-a, a ne potpuna simulacija PLC logike. Prije rada na stroju provjeri svaki signal u originalnom ladderu i na PLC-u. Nemoj premošćivati sigurnosne krugove.</div>
+
+<section class="panel">
+<b>🤖 Mazak AI Technician</b>
+<div class="small" style="margin-top:6px">AI analiza alarma, PLC signala i ladder logike.</div>
+<div class="ai-note small">AI koristi dostavljeni tekstualni kontekst. Provjeri zaključke u originalnom ladderu. Nikada ne premošćuj sigurnosne krugove.</div>
+<div id="aiChat" class="chatbox" aria-live="polite">
+<div class="chatmsg chatai">Pozdrav! Ja sam Mazak AI Technician. Učitaj PLC PDF i postavi pitanje.</div>
+</div>
+<textarea id="aiQuestion" placeholder="Upiši pitanje... (Enter šalje, Shift+Enter novi red)"></textarea>
+<div class="row" style="margin-top:9px">
+<button id="aiSend">Pošalji pitanje</button>
+<button id="aiClear" class="secondary">Novi razgovor</button>
+</div>
+<div id="aiStatus" class="small" style="margin-top:9px">AI spreman.</div>
+</section>
+
+<div class="foot">
+Ovo je pomoćni alat za pretraživanje i dijagnostiku. Rezultati su tekstualni izvodi iz PDF-a, a ne simulacija PLC logike. Pravilo AL = F (alarm − 200) vrijedi samo za potvrđenu konfiguraciju. Provjeri svaki signal u originalnom ladderu i na PLC-u. Nemoj premošćivati sigurnosne krugove.
+</div>
 </main>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
-if(window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+if(window.pdfjsLib)pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
 let pagesData=[],mode="all",loaded=false;
 const $=id=>document.getElementById(id);
-document.querySelectorAll(".tabs button").forEach(b=>b.addEventListener("click",()=>{mode=b.dataset.mode;document.querySelectorAll(".tabs button").forEach(x=>{x.classList.toggle("active",x===b);x.classList.toggle("secondary",x!==b)});}));
-function status(s){$("loadStatus").textContent=s}
-async function loadPDF(file){
- if(!window.pdfjsLib){status("PDF biblioteka nije dostupna. Provjeri internetsku vezu.");return}
- status("Učitavam i indeksiram PDF…");pagesData=[];loaded=false;
- try{
-  const buf=await file.arrayBuffer(),pdf=await pdfjsLib.getDocument({data:buf}).promise;
-  $("pages").textContent=pdf.numPages+" stranica";
-  for(let n=1;n<=pdf.numPages;n++){
-   const p=await pdf.getPage(n),c=await p.getTextContent();
-   const lines=[];let current="",lastY=null;
-   for(const it of c.items){const y=Math.round(it.transform[5]);if(lastY!==null&&Math.abs(y-lastY)>3){if(current.trim())lines.push(current.trim());current=""}current+=(it.str||"")+" ";lastY=y}
-   if(current.trim())lines.push(current.trim());
-   pagesData.push({page:n,text:lines.join("\n"),lines});
-   if(n%20===0)status(`Indeksiram stranicu ${n}/${pdf.numPages}…`);
-  }
-  loaded=true;status(`PDF spreman. Indeksirano ${pdf.numPages} stranica.`);$("results").textContent="PDF je spreman. Upiši alarm, adresu ili tekst.";
- }catch(e){status("Greška pri čitanju PDF-a: "+e.message)}
-}
-$("pdfFile").addEventListener("change",e=>{if(e.target.files[0])loadPDF(e.target.files[0])});
-$("loadSample").addEventListener("click",async()=>{try{status("Učitavam priloženi PLC_LADDER11.pdf…");const r=await fetch("./assets/PLC_LADDER11.pdf");if(!r.ok)throw Error("Datoteka nije pronađena. Učitaj PDF ručno.");const b=await r.blob();await loadPDF(new File([b],"PLC_LADDER11.pdf",{type:"application/pdf"}))}catch(e){status(e.message+" Ako otvaraš sam HTML, odaberi PDF ručno iz Files.")}});
-function esc(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-function addrTokens(s){return [...new Set((s.match(/\b(?:[XFYMTLC]\s?[0-9A-F]{1,4}|D\d{1,4})\b/gi)||[]).map(x=>x.replace(/\s/g,"").toUpperCase()))]}
-function rungLines(page,idx){let a=Math.max(0,idx-4),b=Math.min(page.lines.length,idx+5);let out=page.lines.slice(a,b);let rung=out.find(x=>/^\s*\d{3,6}\s*\*/.test(x));return {rung:rung||"Rung nije jasno prepoznat u tekstualnom izvodu.",context:out.join("\n"),addresses:addrTokens(out.join(" "))}}
-function runSearch(){
- if(!loaded){$("results").textContent="Prvo učitaj PDF.";return}
- let q=$("query").value.trim();if(!q)return;
- let effective=q,alarm=null;
- if(mode==="alarm"||mode==="all"){
-  let m=q.match(/(?:AL(?:ARM)?\s*)?(\d{2,4})/i);
-  if(m&&(/AL|ARM/i.test(q)||mode==="alarm"||/^\d{2,4}$/.test(q))){alarm=Number(m[1]);let f=alarm-Number($("offset").value||200);if(f>=0){effective="F"+f;$("mapInfo").textContent=`AL ${alarm} → F${f}; pretražujem i broj alarma i adresu F${f}.`;}}
- }
- let terms=[q];if(alarm!==null){const f=alarm-Number($("offset").value||200);if(f>=0)terms.push("F"+f)}
- let found=[];
- pagesData.forEach(p=>p.lines.forEach((line,i)=>{
-  if(terms.some(t=>line.toLowerCase().includes(t.toLowerCase()))){
-   const near=rungLines(p,i);found.push({page:p.page,line,near,idx:i});
-  }
- }));
- // De-duplicate nearby matches on same page/rung.
- const seen=new Set();found=found.filter(x=>{let k=x.page+"|"+(x.near.rung||x.line);if(seen.has(k))return false;seen.add(k);return true});
- $("count").textContent=found.length+" pronađenih mjesta";
- if(!found.length){$("results").innerHTML="Nema pronađenih podudaranja. Pokušaj adresu, naziv signala ili drugi pojam.";return}
- $("results").innerHTML=found.slice(0,100).map((x,i)=>`<article class="result"><h3>Stranica ${x.page} · rezultat ${i+1}</h3><div>${terms.map(t=>`<span class="tag">${esc(t)}</span>`).join("")}</div><p><b>Pronađeni redak:</b> ${esc(x.line)}</p><p><b>Rung / okolni kontekst:</b></p><pre>${esc(x.near.context)}</pre><p><b>Povezane adrese:</b> ${x.near.addresses.map(a=>`<span class="tag">${a}</span>`).join(" ")||"Nisu automatski prepoznate"}</p></article>`).join("");
-}
-$("searchBtn").addEventListener("click",runSearch);$("query").addEventListener("keydown",e=>{if(e.key==="Enter")runSearch()});
-$("camera").addEventListener("change",e=>$("ocrBtn").disabled=!e.target.files.length);
-$("ocrBtn").addEventListener("click",async()=>{
- const f=$("camera").files[0];if(!f)return;$("ocrBtn").disabled=true;$("ocrBtn").textContent="Prepoznajem…";
- try{if(!window.Tesseract){await new Promise((res,rej)=>{let s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js";s.onload=res;s.onerror=rej;document.head.appendChild(s)})}
- const r=await Tesseract.recognize(f,"eng");$("ocrText").classList.remove("hidden");$("ocrText").textContent=r.data.text;$("query").value=r.data.text.trim().split(/\s+/).slice(0,8).join(" ");mode="all";runSearch();
- }catch(e){alert("OCR nije uspio: "+e.message)}finally{$("ocrBtn").disabled=false;$("ocrBtn").textContent="Prepoznaj tekst"}
+
+document.querySelectorAll(".tabs button").forEach(b=>b.addEventListener("click",()=>{
+mode=b.dataset.mode;
+document.querySelectorAll(".tabs button").forEach(x=>{
+x.classList.toggle("active",x===b);
+x.classList.toggle("secondary",x!==b);
 });
-</script></body></html>
+}));
+
+function status(s){$("loadStatus").textContent=s}
+
+async function loadPDF(file){
+if(!window.pdfjsLib){status("PDF biblioteka nije dostupna.");return}
+status("Učitavam i indeksiram PDF…");
+pagesData=[];loaded=false;
+try{
+const buf=await file.arrayBuffer();
+const pdf=await pdfjsLib.getDocument({data:buf}).promise;
+$("pages").textContent=pdf.numPages+" stranica";
+for(let n=1;n<=pdf.numPages;n++){
+const p=await pdf.getPage(n),c=await p.getTextContent();
+const lines=[];let current="",lastY=null;
+for(const it of c.items){
+const y=Math.round(it.transform[5]);
+if(lastY!==null&&Math.abs(y-lastY)>3){
+if(current.trim())lines.push(current.trim());
+current="";
+}
+current+=(it.str||"")+" ";lastY=y;
+}
+if(current.trim())lines.push(current.trim());
+pagesData.push({page:n,text:lines.join("\n"),lines});
+if(n%20===0)status(`Indeksiram stranicu ${n}/${pdf.numPages}…`);
+}
+loaded=true;
+status(`PDF spreman. Indeksirano ${pdf.numPages} stranica.`);
+$("results").textContent="PDF je spreman. Upiši alarm, adresu ili tekst.";
+$("aiStatus").textContent="PDF učitan. AI može dobiti relevantne dijelove laddera.";
+}catch(e){status("Greška pri čitanju PDF-a: "+e.message)}
+}
+
+$("pdfFile").addEventListener("change",e=>{
+if(e.target.files[0])loadPDF(e.target.files[0]);
+});
+
+$("loadSample").addEventListener("click",async()=>{
+try{
+status("Učitavam PLC_LADDER11.pdf…");
+const r=await fetch("./PLC_LADDER11.pdf");
+if(!r.ok)throw Error("PDF nije pronađen. Učitaj ga ručno.");
+const b=await r.blob();
+await loadPDF(new File([b],"PLC_LADDER11.pdf",{type:"application/pdf"}));
+}catch(e){status(e.message)}
+});
+
+function esc(s){
+return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+function addrTokens(s){
+return [...new Set((s.match(/\b(?:[XFYMTLC]\s?[0-9A-F]{1,4}|D\d{1,4})\b/gi)||[]).map(x=>x.replace(/\s/g,"").toUpperCase()))];
+}
+
+function rungLines(page,idx){
+let a=Math.max(0,idx-4),b=Math.min(page.lines.length,idx+5);
+let out=page.lines.slice(a,b);
+let rung=out.find(x=>/^\s*\d{3,6}\s*\*/.test(x));
+return {rung:rung||"Rung nije jasno prepoznat.",context:out.join("\n"),addresses:addrTokens(out.join(" "))};
+}
+
+function runSearch(){
+if(!loaded){$("results").textContent="Prvo učitaj PDF.";return}
+let q=$("query").value.trim();if(!q)return;
+let terms=[q],alarm=null;
+if(mode==="alarm"||mode==="all"){
+let m=q.match(/(?:AL(?:ARM)?\s*)?(\d{2,4})/i);
+if(m&&(/AL|ARM/i.test(q)||mode==="alarm"||/^\d{2,4}$/.test(q))){
+alarm=Number(m[1]);
+let f=alarm-Number($("offset").value||200);
+if(f>=0){
+terms.push("F"+f);
+$("mapInfo").textContent=`AL ${alarm} → F${f}; pretražujem i broj alarma i adresu F${f}.`;
+}
+}
+}
+let found=[];
+pagesData.forEach(p=>p.lines.forEach((line,i)=>{
+if(terms.some(t=>line.toLowerCase().includes(t.toLowerCase()))){
+const near=rungLines(p,i);
+found.push({page:p.page,line,near});
+}
+}));
+const seen=new Set();
+found=found.filter(x=>{
+let k=x.page+"|"+x.near.rung+"|"+x.line;
+if(seen.has(k))return false;
+seen.add(k);return true;
+});
+$("count").textContent=found.length+" pronađenih mjesta";
+if(!found.length){
+$("results").innerHTML="Nema pronađenih podudaranja.";
+return;
+}
+$("results").innerHTML=found.slice(0,100).map((x,i)=>`
+<article class="result">
+<h3>Stranica ${x.page} · rezultat ${i+1}</h3>
+<div>${terms.map(t=>`<span class="tag">${esc(t)}</span>`).join("")}</div>
+<p><b>Pronađeni redak:</b> ${esc(x.line)}</p>
+<p><b>Rung / okolni kontekst:</b></p>
+<pre>${esc(x.near.context)}</pre>
+<p><b>Povezane adrese:</b> ${x.near.addresses.map(a=>`<span class="tag">${esc(a)}</span>`).join(" ")||"Nisu automatski prepoznate"}</p>
+</article>`).join("");
+}
+
+$("searchBtn").addEventListener("click",runSearch);
+$("query").addEventListener("keydown",e=>{if(e.key==="Enter")runSearch()});
+
+$("camera").addEventListener("change",e=>$("ocrBtn").disabled=!e.target.files.length);
+
+$("ocrBtn").addEventListener("click",async()=>{
+const f=$("camera").files[0];if(!f)return;
+$("ocrBtn").disabled=true;
+$("ocrBtn").textContent="Prepoznajem…";
+try{
+if(!window.Tesseract){
+await new Promise((res,rej)=>{
+let s=document.createElement("script");
+s.src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js";
+s.onload=res;s.onerror=rej;
+document.head.appendChild(s);
+});
+}
+const r=await Tesseract.recognize(f,"eng");
+$("ocrText").classList.remove("hidden");
+$("ocrText").textContent=r.data.text;
+$("query").value=r.data.text.trim().split(/\s+/).slice(0,8).join(" ");
+mode="all";runSearch();
+}catch(e){alert("OCR nije uspio: "+e.message)}
+finally{
+$("ocrBtn").disabled=false;
+$("ocrBtn").textContent="Prepoznaj tekst";
+}
+});
+
+// MAZAK AI TECHNICIAN
+// API ključ se čuva isključivo u Cloudflare Worker Secretu.
+const AI_URL="https://mazak-ai-assistant.ma-osmanovic.workers.dev";
+let aiHistory=[];
+
+function addChatMessage(role,message){
+const box=$("aiChat"),div=document.createElement("div");
+div.className="chatmsg "+(role==="user"?"chatuser":"chatai");
+div.textContent=message;
+box.appendChild(div);
+box.scrollTop=box.scrollHeight;
+}
+
+function buildLadderContext(question){
+if(!loaded||!pagesData.length)return "PLC PDF nije učitan.";
+const terms=(question.toLowerCase().match(/[a-z0-9*._-]+/g)||[]).filter(t=>t.length>1);
+const alarm=question.match(/\b(?:AL|ALARM)\s*[-:#]?\s*(\d{2,4})\b/i);
+const bare=question.match(/^\s*(\d{2,4})\s*$/);
+const alarmNumber=alarm?Number(alarm[1]):(bare?Number(bare[1]):null);
+if(alarmNumber!==null){
+const f=alarmNumber-Number($("offset").value||200);
+if(f>=0)terms.push("f"+f);
+}
+const uniqueTerms=[...new Set(terms)];
+const matches=[],seen=new Set();
+for(const page of pagesData){
+for(let i=0;i<page.lines.length;i++){
+const line=page.lines[i].toLowerCase();
+if(uniqueTerms.some(t=>line.includes(t))){
+const near=rungLines(page,i);
+const key=page.page+"|"+near.context;
+if(!seen.has(key)){
+seen.add(key);
+matches.push("STRANICA "+page.page+
+"\nRUNG: "+near.rung+
+"\nPOVEZANE ADRESE: "+near.addresses.join(", ")+
+"\nKONTEKST:\n"+near.context);
+}
+if(matches.length>=14)break;
+}
+}
+if(matches.length>=14)break;
+}
+return matches.length
+?"Izvadak iz učitanog PLC ladder PDF-a (tekstualni prikaz; provjeri originalnu stranicu):\n\n"+matches.join("\n\n--------------------\n\n").slice(0,16000)
+:"PDF je učitan, ali nisu pronađeni odgovarajući retci. Pokušaj s točnom adresom ili nazivom signala.";
+}
+
+async function sendAIQuestion(){
+const question=$("aiQuestion").value.trim();
+if(!question||$("aiSend").disabled)return;
+$("aiQuestion").value="";
+$("aiSend").disabled=true;
+$("aiStatus").textContent="AI analizira pitanje...";
+addChatMessage("user",question);
+try{
+const context=buildLadderContext(question);
+const response=await fetch(AI_URL,{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({message:question,context,history:aiHistory})
+});
+let data;
+try{data=await response.json()}
+catch(_){throw new Error("Worker nije vratio valjani JSON odgovor.")}
+if(!response.ok)throw new Error(data.error||("HTTP greška "+response.status));
+const answer=data.answer||"AI nije vratio tekstualni odgovor.";
+addChatMessage("assistant",answer);
+aiHistory.push(
+{role:"user",content:question},
+{role:"assistant",content:answer}
+);
+aiHistory=aiHistory.slice(-8);
+$("aiStatus").textContent="Odgovor primljen.";
+}catch(error){
+addChatMessage("assistant","Greška pri povezivanju: "+error.message);
+$("aiStatus").textContent="Provjeri Worker, API ključ i API model.";
+}finally{
+$("aiSend").disabled=false;
+}
+}
+
+$("aiSend").addEventListener("click",sendAIQuestion);
+$("aiQuestion").addEventListener("keydown",e=>{
+if(e.key==="Enter"&&!e.shiftKey){
+e.preventDefault();
+sendAIQuestion();
+}
+});
+
+$("aiClear").addEventListener("click",()=>{
+aiHistory=[];
+$("aiChat").innerHTML="";
+addChatMessage("assistant","Novi razgovor. Kako mogu pomoći?");
+$("aiStatus").textContent="Novi razgovor.";
+});
+</script>
+</body>
+</html>
